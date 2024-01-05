@@ -324,8 +324,8 @@ function SearchMe() {
 }
 
 function fitbou(filter) {
-    var layer = 'DP:Revenue'
-    var urlm = "http://portal.tcplgeo.com/geoservers/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=" +
+    var layer = 'zone:Revenue'
+    var urlm = "http://portal.geopulsea.com/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=" +
         layer + "&CQL_FILTER=" + filter + "&outputFormat=application/json";
     $.getJSON(urlm, function (data) {
         geojson = L.geoJson(data, {});

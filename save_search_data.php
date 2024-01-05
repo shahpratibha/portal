@@ -7,7 +7,7 @@ session_start(); // Start the session
 // Assuming you are using MySQL database
 $servername = 'localhost';
 $username = 'phpmyadmin';
-$password = 'Sagar@992101';
+$password = 'Geo@992101';
 $dbname = 'jfsa';
 
 // Create a new database connection

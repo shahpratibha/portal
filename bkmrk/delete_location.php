@@ -1,8 +1,8 @@
 <?php
 // Connect to your database
 $servername = "localhost";
-$username = "phpmyadmin";
-$password = "Sagar@992101";
+$username = "root";
+$password = "";
 $dbname = "jfsa";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -11,11 +11,11 @@ if ($conn->connect_error) {
 }
 
 // Check if the ID parameter is set
-if (isset($_POST['id'])) {
-    $locationId = $_POST['id'];
+if (isset($_POST['name'])) {
+    $locationId = $_POST['name'];
 
     // Delete the location from the database
-    $sql = "DELETE FROM locations WHERE id = '$locationId'";
+    $sql = "DELETE FROM locations WHERE name = '$locationId'";
     if ($conn->query($sql) === TRUE) {
         echo "Location deleted successfully";
     } else {

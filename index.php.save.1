@@ -6,7 +6,7 @@ if (!isset($_SESSION['username'])) {
     header('location: login.php');
 }
 // Connect to database
-$db = mysqli_connect('localhost', 'root', '', 'jfsa');
+$db = mysqli_connect('localhost', 'phpmyadmin', 'Geo@992101', 'jfsa');
 
 // Retrieve user details from database
 $username = $_SESSION['username'];
@@ -21,21 +21,13 @@ $userN = $_SESSION['username'];
 $sql = "SELECT * FROM locations  WHERE username = '$username'";
 $result = $db->query($sql);
 
-$locations = array();
+	$locations = array();
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $locations[] = $row;
     }
 }
-
-
-
-if ($db->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
 
 
 ?>
@@ -51,10 +43,8 @@ if ($db->connect_error) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GeoPulse</title>
-<!--    <link rel="icon" type="image/x-icon" href="images/logo1.png"> -->
+    <link rel="icon" type="image/x-icon" href="images/logo1.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.0/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
@@ -139,235 +129,192 @@ if ($db->connect_error) {
 
     <!-- fontawsome -->
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- json -->
 
     <script>
-
     $(function() {
-                        var availableTags = ['Pimpalgaon Tarf Khed,Khed', 'Rohakal,Khed', 'Kanersar,Khed', 'Chinchoshi,Khed',
-                            'Sabalewadi,Khed', 'Sidhegavhan,Khed', 'Torne Bk,Khed', 'Hedruj,Khed', 'Davadi,Khed',
-                            'Nimgaon,Khed', 'Kadus,Khed', 'Talawade,Khed', 'Kohinde Bk.,Khed', 'Bahirwadi,Khed',
-                            'Pangari,Khed', 'Pait,Khed', 'Shelu,Khed', 'Koregaon Kh,Khed', 'Koregaon bk,Khed',
-                            'Chandus,Khed', 'Retavadi,Khed', 'Kharpudi Bk,Khed', 'Pimpari Bk,Khed', 'Kharpudi Kh,Khed',
-                            'Kalewadi,Khed', 'Padali,Khed', 'Koye,Khed', 'Gosasi,Khed', 'Vadgaon Ghenand,Khed',
-                            'Manjarewadi,Khed', 'Kurkundi,Khed', 'Raundhalwadi,Khed', 'Kalus,Khed', 'Shive,Khed',
-                            'Gargotiwadi,Khed', 'Kiwale,Khed', 'Jaidwadi,Khed', 'Khalchi Bhamburwadi,Khed',
-                            'Arudewadi,Khed', 'Kohinkarwadi,Khed', 'Gulani,Khed', 'Pur,Khed', 'Jaulke Kh.,Khed',
-                            'Waki BK,Khed', 'Ahire,Khed', 'Dhamane,Khed', 'Askhed Bk,Khed', 'Kaman,Khed', 'Chas,Khed',
-                            'Papalwadi,Khed', 'Mirajewadi,Khed', 'Wakalwadi,Khed', 'Takalkarwadi,Khed', 'Donde,Khed',
-                            'Wahagaon,Khed', 'Karanj Vihire,Khed', 'Koyali Tarf Chakan,Khed', 'Akharwadi,Khed',
-                            'Jaulke Bk.,Khed', 'Vaphgaon,Khed', 'Chichbaiwadi,Khed', 'Gadakwadi,Khed', 'Chaudharwadi,Khed',
-                            'Warude,Khed', 'Butewadi,Khed', 'Waki Tarf Wada,Khed', 'Gonvadi,Khed', 'Pimpari Kh.,Khed',
-                            'Bahul,Khed', 'Chakan,Khed', 'Rajgurunagar,Khed', 'Shelgaon,Khed', 'Askhed Kh,Khed',
-                            'Parale,Khed', 'Malkhed,Haveli', 'Bakori,Haveli', 'Gogalwadi,Haveli', 'Kondhanpur,Haveli',
-                            'Mandavi Kh,Haveli', 'Mandavi Bk.,Haveli', 'Khadakwadi,Haveli', 'Aambi,Haveli',
-                            'Alandi Mhatobachi,Haveli', 'Walati,Haveli', 'Manerwadi,Haveli', 'Tikekarwadi,Haveli',
-                            'Khanapur,Haveli', 'Sashte,Haveli', 'Tarade,Haveli', 'Dongargaon,Haveli', 'Thoptewadi,Haveli',
-                            'Gorhe Kh.,Haveli', 'Dehu,Haveli', 'Malinagar,Haveli', 'Vitthal Nagar,Haveli',
-                            'Gorhe Bk.,Haveli', 'Bivari,Haveli', 'Sangarun,Haveli', 'Agalambe,Haveli', 'Arvi,Haveli',
-                            'Pimpri Tarf Sandas,Haveli', 'Sangavi Tarf Sandas,Haveli', 'Jambhali,Haveli', 'Ashtapur,Haveli',
-                            'Bhagatwadi,Haveli', 'Gaud Dara,Haveli', 'Wade Bolhai,Haveli', 'Shindwane,Haveli',
-                            'Kalyan,Haveli', 'Ghera Sinhgad,Haveli', 'Kudaje,Haveli', 'Donaje,Haveli', 'Wanjalewadi,Haveli',
-                            'Burkegaon,Haveli', 'Nhavi Sandas,Haveli', 'Shindewadi,Haveli', 'Gawadewadi,Haveli',
-                            'Murkutenagar,Haveli', 'Khamgaon Tek,Haveli', 'Ramoshiwadi,Haveli', 'Mokarwadi,Haveli',
-                            'Khadewadi,Haveli', 'Bahuli,Haveli', 'Tanaji Nagar,Haveli', 'Sonapur,Haveli', 'Vardare,Haveli',
-                            'Sambharewadi,Haveli', 'Khamgaon Mawal,Haveli', 'Mogarwadi,Haveli', 'Mordarwadi,Haveli',
-                            'Avasare,Haveli', 'Rahatvade,Haveli', 'Hingangaon,Haveli', 'Shiraswadi,Haveli', 'Katavi,Mawal',
-                            'Kale,Mawal', 'Prabhachiwadi,Mawal', 'Yelse,Mawal', 'Ardav (Adavi),Mawal', 'Kadadhe,Mawal',
-                            'Nane,Mawal', 'Tung,Mawal', 'Tikona,Mawal', 'Chavsar,Mawal', 'Boravli,Mawal', 'Inglun,Mawal',
-                            'Khand,Mawal', 'Kolechafesar,Mawal', 'Kusur,Mawal', 'Morave,Mawal', 'Pimpriwadi,Mawal',
-                            'Shivali,Mawal', 'Thoran,Mawal', 'Ukasan,Mawal', 'Vadeshwar,Mawal', 'Kusgaon P.m.,Mawal',
-                            'Takave Bk.,Mawal', 'Shevati,Mawal', 'Pansoli,Mawal', 'Atvan,Mawal', 'Malegao Bk.,Mawal',
-                            'Apati,Mawal', 'Bhajgaon,Mawal', 'Bhoyre,Mawal', 'Divad,Mawal', 'Govitri,Mawal', 'Jovan,Mawal',
-                            'Kondiwade,Mawal', 'Pachane,Mawal', 'Pale,Mawal', 'Udhewadi,Mawal', 'Vadavali,Mawal',
-                            'Pangloli,Mawal', 'Karandoli,Mawal', 'Dhaiwali,Mawal', 'Shilatane,Mawal', 'Takave Kh.,Mawal',
-                            'Rajpuri,Mawal', 'Kurvande,Mawal', 'Lonawale,Mawal', 'Malavandi Thule,Mawal', 'Ambegaon,Mawal',
-                            'Kunewadi,Mawal', 'Dahuli,Mawal', 'Mangarul,Mawal', 'Somwadi,Mawal', 'Kondivade N.m,Mawal',
-                            'Dudhivare,Mawal', 'Vagheshwar,Mawal', 'Shilimb,Mawal', 'Sawale,Mawal', 'Pusane,Mawal',
-                            'Malegao Kh,Mawal', 'Ajivali,Mawal', 'Valakh,Mawal', 'Sawantwadi,Mawal', 'Malewadi,Mawal',
-                            'Mahagaon,Mawal', 'Lohagad,Mawal', 'Kambare N.m.,Mawal', 'Dhalewadi,Mawal', 'Budhavadi,Mawal',
-                            'Gevhandhe,Mawal', 'Nagatali,Mawal', 'Rakaswadi,Mawal', 'Kusavali,Mawal', 'Wahangao,Mawal',
-                            'Kiwale,Mawal', 'Shirdhe,Mawal', 'Jamboli,Mawal', 'Nandgaon,Mawal', 'Shindgaon,Mawal',
-                            'Kambare Andar,Mawal', 'Kashal,Mawal', 'Khandashi,Mawal', 'Nesave,Mawal', 'Valavanti,Mawal',
-                            'Dhangavhan,Mawal', 'Ovale,Mawal', 'Yelghol,Mawal', 'Velholi,Mawal', 'Karanjgaon,Mawal',
-                            'Sangise,Mawal', 'Pale Nane Mawal,Mawal', 'Mormarwadi,Mawal', 'Mau,Mawal', 'Kacharewadi,Mawal',
-                            'Vaund,Mawal', 'Brahmanwadi,Mawal', 'Done,Mawal', 'Kothurne,Mawal', 'Shire,Mawal',
-                            'Belaj,Mawal', 'Jeware,Mawal', 'Vehergaon,Mawal', 'Budhle N.M.,Mawal', 'Vadivale,Mawal',
-                            'Adhale bk,Mawal', 'Adhale kh.,Mawal', 'Shivane,Mawal', 'Phalne,Mawal', 'Ghonshet,Mawal',
-                            'Sai,Mawal', 'Bhadawali,Mawal', 'Majgaon,Mawal', 'Pimpal Khunte,Mawal', 'Malawali P.m.,Mawal',
-                            'Bedse,Mawal', 'Thugaon,Mawal', 'Varu,Mawal', 'Phagane,Mawal', 'Kadav,Mawal',
-                            'Gevhande Khadak,Mawal', 'Keware,Mawal', 'Thakursai,Mawal', 'Brahmanoli,Mawal', 'Muthe,Mulshi',
-                            'Padalgharwadi,Mulshi', 'Mugaon,Mulshi', 'Valane,Mulshi', 'Ugavali,Mulshi', 'Jawal,Mulshi',
-                            'Ghutake,Mulshi', 'Ekole,Mulshi', 'Tailbaila,Mulshi', 'Bhambarde,Mulshi', 'Botarwadi,Mulshi',
-                            'Chandivali,Mulshi', 'Andgaon,Mulshi', 'Dhamanohol,Mulshi', 'Koloshi,Mulshi', 'Sakhari,Mulshi',
-                            'Kharavade,Mulshi', 'Pimploli,Mulshi', 'Masgaon,Mulshi', 'Wadavali,Mulshi', 'Admal,Mulshi',
-                            'Bhembhatmal,Mulshi', 'Palase,Mulshi', 'Patharshet,Mulshi', 'Saiv Kh,Mulshi', 'Bhode,Mulshi',
-                            'Mulshi Kh,Mulshi', 'Tata Talav,Mulshi', 'Karmoli,Mulshi', 'Shedani,Mulshi', 'Kolwan,Mulshi',
-                            'Sathesai,Mulshi', 'Mugavde,Mulshi', 'Katavadi,Mulshi', 'Davje,Mulshi', 'Malegaon,Mulshi',
-                            'Wanjale,Mulshi', 'Watunde,Mulshi', 'Vede,Mulshi', 'Mandede,Mulshi', 'Jatede,Mulshi',
-                            'Kashing,Mulshi', 'Amaralewadi,Mulshi', 'Barape_Bk,Mulshi', 'Bhalgudi,Mulshi', 'Saltar,Mulshi',
-                            'Shirvali,Mulshi', 'Nive,Mulshi', 'Andhale,Mulshi', 'Ambarwet,Mulshi', 'Vandre,Mulshi',
-                            'Vadgaon,Mulshi', 'Pimpri,Mulshi', 'Rihe,Mulshi', 'Katarkhadak,Mulshi', 'Nandgaon,Mulshi',
-                            'Padalghar,Mulshi', 'Mose Kh.,Mulshi', 'Dhadavali,Mulshi', 'Gadhale,Mulshi', 'Chinchwad,Mulshi',
-                            'Kule,Mulshi', 'Hulavalewadi,Mulshi', 'Tamhini Bk,Mulshi', 'Warak,Mulshi', 'Vegre,Mulshi',
-                            'Kolavade,Mulshi', 'Kondhur,Mulshi', 'Pethshahapur,Mulshi', 'Devghar,Mulshi', 'Ambavane,Mulshi',
-                            'Kolavali,Mulshi', 'Pomgaon,Mulshi', 'Male,Mulshi', 'Kumbheri,Mulshi', 'Jamgaon,Mulshi',
-                            'Share,Mulshi', 'Disali,Mulshi', 'Shileshwar,Mulshi', 'Bhadas Bk.,Mulshi', 'Gavadewadi,Mulshi',
-                            'Dongrgaon,Mulshi', 'Hotale,Mulshi', 'Nanegaon,Mulshi', 'Asade,Mulshi', 'Chikhali Bk.,Mulshi',
-                            'Belwade,Mulshi', 'Tav,Mulshi', 'Chale,Mulshi', 'Darawali (Dakhli),Mulshi', 'Morewadi,Mulshi',
-                            'Bharekarwadi,Mulshi', 'Kasarsai,Mulshi', 'Visakhar,Mulshi', 'Walen,Mulshi', 'Hadasi,Mulshi',
-                            'Kalamshet,Mulshi', 'Vitthalwadi,Mulshi', 'Andeshe,Mulshi', 'Khubawali,Mulshi',
-                            'Temghar,Mulshi', 'Lavarde,Mulshi', 'Khechre,Mulshi', 'Marnewadi,Mulshi', 'Bhuini,Mulshi',
-                            'Savargaon,Mulshi', 'Akole,Mulshi', 'Kondhavale,Mulshi', 'Paud,Mulshi', 'Dakhane,Mulshi',
-                            'Sambhave,Mulshi', 'Khamboli,Mulshi', 'Kemasewadi,Mulshi', 'Adgaon,Mulshi',
-                            'Chikhalgaon,Mulshi', 'Ravade,Mulshi', 'Nandivali,Mulshi', 'Dasave,Mulshi', 'Bhambavade,Bhor',
-                            'Bhongavli,Bhor', 'Dhangavadi,Bhor', 'Gunand,Bhor', 'Kenjal,Bhor', 'Khadki,Bhor', 'Kikavi,Bhor',
-                            'Morwadi,Bhor', 'Nhavi,Bhor', 'Nidhan,Bhor', 'Nigade,Bhor', 'Pande,Bhor', 'Panjalwadi,Bhor',
-                            'Rajapur,Bhor', 'Sangavi Kh,Bhor', 'Sarole,Bhor', 'Savardare,Bhor', 'Taprewadi,Bhor',
-                            'Umbare,Bhor', 'Vathar Kh,Bhor', 'Wagajwadi,Bhor', 'Degaon,Bhor', 'Didghar,Bhor',
-                            'Jambhali,Bhor', 'Kambare,Bhor', 'Kanjale,Bhor', 'Karandi,Bhor', 'Ketkavane,Bhor', 'Khopi,Bhor',
-                            'Kolavadi,Bhor', 'Kurungvadi,Bhor', 'Kusgaon,Bhor', 'Malegaon,Bhor', 'Parvadi,Bhor',
-                            'Ranje,Bhor', 'Salavade,Bhor', 'Sangavi Bk,Bhor', 'Sonavadi,Bhor', 'Virwadi,Bhor',
-                            'Tamhanwadi,Daund', 'Sahajpurwadi,Daund', 'Nandur,Daund', 'Dalimb,Daund', 'Takali,Daund',
-                            'Vadgaon Bande,Daund', 'Koregaon Bhiwar,Daund', 'Telewadi,Daund', 'Panwali,Daund',
-                            'Pilanwadi,Daund', 'Mirwadi,Daund', 'Dahitane,Daund', 'Devkarwadi,Daund', 'Boribhadak,Daund',
-                            'Boriaindi,Daund', 'Boratewadi,Daund', 'Bharatgaon,Daund', 'Jawajebuwachiwadi,Daund',
-                            'Kamatwadi,Daund', 'Kasurdi,Daund', 'Bhandgaon,Daund', 'Patethan,Daund', 'Tambewadi,Daund',
-                            'Ladkatwadi,Daund', 'Khutbav,Daund', 'Pimpalgaon,Daund', 'Delvadi (Ekeriwadi),Daund',
-                            'Undawadi,Daund', 'Nathachiwadi,Daund', 'Valki,Daund', 'Rahu,Daund', 'Khamgaon,Daund',
-                            'Nangaon,Daund', 'Amoni Mal,Daund', 'Ganesh Road,Daund', 'Varwand,Daund', 'Khopodi,Daund',
-                            'Handalwadi,Daund', 'Wakhari,Daund', 'Dapodi,Daund', 'Pargaon,Daund', 'Deshmukh Mala,Daund',
-                            'Nimbalkar Wasti,Daund', 'Galandwadi,Daund', 'Kodit Kh.,Purandar', 'Pur,Purandar',
-                            'Pokhar,Purandar', 'Warwadi,Purandar', 'Kumbhoshi,Purandar', 'Somurdi,Purandar',
-                            'Gherapurandhar,Purandar', 'Supe  Kh.,Purandar', 'Misalwadi,Purandar', 'Thapewadi,Purandar',
-                            'Bhivari,Purandar', 'Bhivadi,Purandar', 'Bahirwadi,Purandar', 'Bhopgaon,Purandar',
-                            'Patharwadi,Purandar', 'Pimpale,Purandar', 'Panvadi,Purandar', 'Hivare,Purandar',
-                            'Kodit Budruk,Purandar', 'Askarwadi,Purandar', 'Chambali,Purandar', 'Borhalewadi,Purandar',
-                            'Garade,Purandar', 'Ambawane,Velhe', 'Chinchale Bk,Velhe', 'Karajwane,Velhe', 'Adavali,Velhe',
-                            'Askawadi,Velhe', 'Ketkavane,Velhe', 'Kolwadi,Velhe', 'Lasirgaon,Velhe', 'Margasani,Velhe',
-                            'Khambawadi,Velhe', 'Mangdari,Velhe', 'Mangaon,Velhe', 'Pole,Velhe', 'Kasedi,Velhe',
-                            'Chikhali Kh,Velhe', 'Bhalvadi,Velhe', 'Thangaon,Velhe', 'Shirkoli,Velhe', 'Ghodshet,Velhe',
-                            'Ambed,Velhe', 'Khamgaon,Velhe', 'Vinzar,Velhe', 'Wangani,Velhe', 'Varasgaon,Velhe',
-                            'Ambegaon Kh,Velhe', 'Gholapghar,Velhe', 'Kambegi,Velhe', 'Ranjane,Velhe', 'Dapode,Velhe',
-                            'Chinchale Kh,Velhe', 'Kuran Bk,Velhe', 'Vadghar,Velhe', 'Givashi,Velhe', 'Koshimghar,Velhe',
-                            'Mose Bk,Velhe', 'Saiv Bk.,Velhe', 'Ranavdi,Velhe', 'Boravale,Velhe', 'Nigade Bk.,Velhe',
-                            'Panshet,Velhe', 'Kondgaon,Velhe', 'Malavli,Velhe', 'Kathawadi,Velhe', 'Rule,Velhe',
-                            'Kuran Kh,Velhe', 'Dhindli,Velhe', 'Ambegaon Bk,Velhe', 'Osade,Velhe', 'Nigade Mose,Velhe',
-                            'Kandave,Velhe', 'Wanjalwadi,Velhe', 'Kurvathi,Velhe', 'Pimpale Jagtap,Shirur',
-                            'Wajewadi,Shirur', 'Kasari,Shirur', 'Jategaon Kh.,Shirur', 'Takali Bhima,Shirur',
-                            'Kondhapuri,Shirur', 'Khairewadi,Shirur', 'Rautwadi,Shirur', 'Karandi,Shirur', 'Amdabad,Shirur',
-                            'Jategaon Bk.,Shirur', 'Kendur,Shirur', 'Shastabad,Shirur', 'Khandale,Shirur',
-                            'Sone Sangavi,Shirur', 'Hivare,Shirur', 'Burunjwadi,Shirur', 'Darekarwadi,Shirur',
-                            'Vitthalwadi,Shirur', 'Dingrajwadi,Shirur', 'Malthan,Shirur', 'Waghale,Shirur', 'Varude,Shirur',
-                            'Shivtakrar Mahalungi,Shirur', 'Shingadwadi,Shirur', 'Ranjangaon Sandas,Shirur',
-                            'Rakshewadi,Shirur', 'Pimpale Dumal,Shirur', 'Pimpari Dumala,Shirur', 'Nimgaon Bhogi,Shirur',
-                            'Mukhai,Shirur', 'Motewadi,Shirur', 'Midgulwadi,Shirur', 'Lakhewadi,Shirur',
-                            'Karanjawane,Shirur', 'Golegaon,Shirur', 'Dhanore,Shirur', 'Dhamari,Shirur', 'Dahiwadi,Shirur',
-                            'Chincholi,Shirur', 'Bhambarde,Shirur', 'Arangaon,Shirur', 'Ambale,Shirur',
-                            'Ganegaon Burunjwadi,Shirur', 'Kanhur mesai,Shirur', 'Pabal,Shirur', 'Andhalgaon,Shirur',
-                            'Nimone,Shirur', 'Nhavara,Shirur', 'Kohakdewadi,Shirur', 'Uralgaon,Shirur',
-                            'Alegaon Paga,Shirur', 'Nagargaon,Shirur', 'Babhulsar Kh.,Shirur', 'Chavhanwadi,Shirur',
-                            'Parodi,Shirur', 'Nimgaon Mhalungi,Shirur', 'Karade,Shirur', 'Nighoje,Khed', 'Moi,Khed',
-                            'Khalumbre,Khed', 'Mahalunge,Khed', 'Kanhewadi Tarf Chakan,Khed', 'Sangurdi,Khed',
-                            'Shinde,Khed', 'Wasuli,Khed', 'Yevalewadi,Khed', 'Sawardari,Khed', 'Kuruli,Khed',
-                            'Medankarwadi,Khed', 'Nanekarwadi,Khed', 'Sudumbare,Mawal', 'Chimbali,Khed', 'Indori,Mawal',
-                            'Biradwadi,Khed', 'Bhamboli,Khed', 'Ambethan,Khed', 'Kharabwadi,Khed', 'Warale,Khed',
-                            'Kadachiwadi,Khed', 'Sudhavadi,Mawal', 'Jambavade,Mawal', 'Bhare,Mulshi', 'Kasar Amboli,Mulshi',
-                            'Mukhaiwadi,Mulshi', 'Uravade,Mulshi', 'Bhukum,Mulshi', 'Nande,Mulshi', 'Sus,Mulshi',
-                            'Bavadhan Bk,Mulshi', 'Vadki,Haveli', 'Ghotavde,Mulshi', 'Talegaon Dabhade (R),Mawal',
-                            'Urse,Mawal', 'Parandwadi,Mawal', 'Bhilarewadi,Haveli', 'Jambhulwadi,Haveli', 'Kolavadi,Haveli',
-                            'Sasewadi,Bhor', 'Shindewadi,Bhor', 'Lavale,Mulshi', 'Man,Mulshi', 'Sanas Nagar,Haveli',
-                            'Nandoshi,Haveli', 'Pirangut,Mulshi', 'Vadgaon Shinde,Haveli', 'Loni-Kalbhor,Haveli',
-                            'Dive,Purandar', 'Ambegaon,Mulshi', 'Pawarwadi,Purandar', 'Kalewadi,Purandar',
-                            'Sonori,Purandar', 'Bhugaon,Mulshi', 'Manjari Kh.,Haveli', 'Manjari Bk,Haveli',
-                            'Kolavdi,Haveli', 'Shevalwadi,Haveli', 'Kadamvak Wasti,Haveli', 'Holkarwadi,Haveli',
-                            'Autad Handewadi,Haveli', 'Vadachiwadi,Haveli', 'Pisoli,Haveli', 'Bebad Ohol,Mawal',
-                            'Dhamne,Mawal', 'Godumbare,Mawal', 'Shirgaon,Mawal', 'Gahunje,Mawal', 'Salumbe,Mawal',
-                            'Sangavade,Mawal', 'Jambe,Mulshi', 'Nere,Mulshi', 'Dattawadi,Mulshi', 'Hinjavadi,Mulshi',
-                            'Marunji,Mulshi', 'Mahalunge,Mulshi', 'Materewadi,Mulshi', 'Bhoirwadi,Mulshi',
-                            'Bhegdewadi,Mulshi', 'Chande,Mulshi', 'Mulkhed,Mulshi', 'Godambewadi,Mulshi',
-                            'Bhowarapur,Haveli', 'Uruli Kanchan,Haveli', 'Peth,Haveli', 'Koregaon Mul,Haveli',
-                            'Prayagdham,Haveli', 'Sortapwadi,Haveli', 'Kunjirwadi,Haveli', 'Theur,Haveli', 'Naygaon,Haveli',
-                            'Mangewadi,Haveli', 'Nimbalkarwadi,Haveli', 'Kirkitwadi,Haveli', 'Khadakwasale,Haveli',
-                            'Nanded ,Haveli', 'Kopare,Haveli', 'Kondhave Dhavade,Haveli', 'Mendhewadi,Mawal',
-                            'Varale,Mawal', 'Malawadi,Mawal', 'Ambi,Mawal', 'Brahman Wadi,Mawal', 'Sate,Mawal',
-                            'Mohitewadi,Mawal', 'Chikhalse,Mawal', 'Ahirvade,Mawal', 'Kusgaon Kh.,Mawal',
-                            'Khadkale (CT),Mawal', 'Kamshet,Mawal', 'Paravadi,Mawal', 'Sadavli,Mawal', 'Ozarde,Mawal',
-                            'Baur,Mawal', 'Brahmanwadi,Mawal', 'Karunj,Mawal', 'Adhe Kh.,Mawal', 'Somatane,Mawal',
-                            'Jadhavwadi,Mawal', 'Akurdi,Mawal', 'Nanoli Tarf Chakan,Mawal', 'Sangavi,Mawal',
-                            'Umbare Navalakh,Mawal', 'Badhalawadi,Mawal', 'Naygaon,Mawal', 'Nanoli N.m.,Mawal',
-                            'Jambhul,Mawal', 'Kanhe,Mawal', 'Ambale,Mawal', 'Nigade,Mawal', 'Kalhat,Mawal',
-                            'Pawalewadi,Mawal', 'Boraj,Mawal', 'Patan,Mawal', 'Kusgaon Bk. (CT),Mawal', 'Devale,Mawal',
-                            'Aundhe kh.,Mawal', 'Dongargaon,Mawal', 'Aundholi,Mawal', 'Varsoli,Mawal', 'Karla,Mawal',
-                            'Waksai,Mawal', 'Devghar,Mawal', 'Sadapur,Mawal', 'Kune N.m.,Mawal', 'Bhaje,Mawal',
-                            'Malvali,Mawal', 'Mudhavare,Mawal', 'Taje,Mawal', 'Pathargaon,Mawal', 'Pimploli,Mawal',
-                            'Santosh Nagar ,Khed', 'Rakshewadi,Khed', 'Waki Kh,Khed', 'Holewadi,Khed', 'Chandoli,Khed',
-                            'Varachi Bhamburwadi,Khed', 'Sandbhorwadi,Khed', 'Pacharnewadi,Khed', 'Dhorewadi,Khed',
-                            'Vadgaon Tarf Khed,Khed', 'Shiroli,Khed', 'Satkarsthal,Khed', 'Koregaon Bhima _CT,Shirur',
-                            'Sanaswadi ,Shirur', 'Shikrapur,Shirur', 'Talegaon Dhamdhere,Shirur', 'Apti,Shirur',
-                            'Vadu Bk.,Shirur', 'Shirur_Annapur_Saradwadi_Tardobachiwadi_Kardilwad,Shirur',
-                            'Dhok Sangavi,Shirur', 'Karegaon,Shirur', 'Ranjangaon Ganpati,Shirur', 'Vanpuri,Purandar',
-                            'Udachiwadi,Purandar', 'Singapur,Purandar', 'Zendewadi,Purandar', 'Jadhavwadi,Purandar',
-                            'Kumbharvalan,Purandar', 'Ambodi,Purandar', 'Gurholi,Purandar', 'Bhose,Khed', 'Alandi,Khed',
-                            'Dhanore,Khed', 'Rase,Khed', 'Solu,Khed', 'Pimpalgaon Tarf Chakan,Khed', 'Tulapur,Haveli',
-                            'Nirgudi,Haveli', 'Markal,Khed', 'Charholi Kh.,Khed', 'Kelgaon,Khed', 'Shivapur,Haveli',
-                            'Khed Shivapur,Haveli', 'Ramnagar,Haveli', 'Kasurdi,Bhor', 'Shivare,Bhor', 'Velu,Bhor',
-                            'Hrishchandri,Bhor', 'Kapurhol,Bhor', 'Divale,Bhor', 'Kamthadi,Bhor', 'Kelavade,Bhor',
-                            'Nasrapur,Bhor', 'Naygaon,Bhor', 'Varve Bk.,Bhor', 'Varve Kh.,Bhor', 'Ketkawale,Purandar',
-                            'Chivewadi,Purandar', 'Devadi,Purandar', 'Awhalwadi,Haveli', 'Loni-kand,Haveli',
-                            'Kesnand,Haveli', 'Taleranwadi,Haveli', 'Bhavadi,Haveli', 'Perane,Haveli', 'Phulgaon,Haveli',
-                            'Wadhu Kh,Haveli', 'Wagholi,Haveli', 'Dhumalicha Mala,Daund', 'Kedgaon,Daund',
-                            'Kedgaon Station,Daund', 'Dhaygudewadi,Daund', 'Boripardhi,Daund', 'Yawat Station,Daund',
-                            'Yawat,Daund', 'Chandkhed,Mawal', 'Darumbare,Mawal', 'Vadgaon,Mawal', 'Golegaon,Khed',
-                            'Narhe,Haveli'
-                        ];
-
-             
-$(document).ready(function() {
+        var availableTags = ['Pimpalgaon Tarf Khed,Khed', 'Rohakal,Khed', 'Kanersar,Khed', 'Chinchoshi,Khed',
+            'Sabalewadi,Khed', 'Sidhegavhan,Khed', 'Torne Bk,Khed', 'Hedruj,Khed', 'Davadi,Khed',
+            'Nimgaon,Khed', 'Kadus,Khed', 'Talawade,Khed', 'Kohinde Bk.,Khed', 'Bahirwadi,Khed',
+            'Pangari,Khed', 'Pait,Khed', 'Shelu,Khed', 'Koregaon Kh,Khed', 'Koregaon bk,Khed',
+            'Chandus,Khed', 'Retavadi,Khed', 'Kharpudi Bk,Khed', 'Pimpari Bk,Khed', 'Kharpudi Kh,Khed',
+            'Kalewadi,Khed', 'Padali,Khed', 'Koye,Khed', 'Gosasi,Khed', 'Vadgaon Ghenand,Khed',
+            'Manjarewadi,Khed', 'Kurkundi,Khed', 'Raundhalwadi,Khed', 'Kalus,Khed', 'Shive,Khed',
+            'Gargotiwadi,Khed', 'Kiwale,Khed', 'Jaidwadi,Khed', 'Khalchi Bhamburwadi,Khed',
+            'Arudewadi,Khed', 'Kohinkarwadi,Khed', 'Gulani,Khed', 'Pur,Khed', 'Jaulke Kh.,Khed',
+            'Waki BK,Khed', 'Ahire,Khed', 'Dhamane,Khed', 'Askhed Bk,Khed', 'Kaman,Khed', 'Chas,Khed',
+            'Papalwadi,Khed', 'Mirajewadi,Khed', 'Wakalwadi,Khed', 'Takalkarwadi,Khed', 'Donde,Khed',
+            'Wahagaon,Khed', 'Karanj Vihire,Khed', 'Koyali Tarf Chakan,Khed', 'Akharwadi,Khed',
+            'Jaulke Bk.,Khed', 'Vaphgaon,Khed', 'Chichbaiwadi,Khed', 'Gadakwadi,Khed', 'Chaudharwadi,Khed',
+            'Warude,Khed', 'Butewadi,Khed', 'Waki Tarf Wada,Khed', 'Gonvadi,Khed', 'Pimpari Kh.,Khed',
+            'Bahul,Khed', 'Chakan,Khed', 'Rajgurunagar,Khed', 'Shelgaon,Khed', 'Askhed Kh,Khed',
+            'Parale,Khed', 'Malkhed,Haveli', 'Bakori,Haveli', 'Gogalwadi,Haveli', 'Kondhanpur,Haveli',
+            'Mandavi Kh,Haveli', 'Mandavi Bk.,Haveli', 'Khadakwadi,Haveli', 'Aambi,Haveli',
+            'Alandi Mhatobachi,Haveli', 'Walati,Haveli', 'Manerwadi,Haveli', 'Tikekarwadi,Haveli',
+            'Khanapur,Haveli', 'Sashte,Haveli', 'Tarade,Haveli', 'Dongargaon,Haveli', 'Thoptewadi,Haveli',
+            'Gorhe Kh.,Haveli', 'Dehu,Haveli', 'Malinagar,Haveli', 'Vitthal Nagar,Haveli',
+            'Gorhe Bk.,Haveli', 'Bivari,Haveli', 'Sangarun,Haveli', 'Agalambe,Haveli', 'Arvi,Haveli',
+            'Pimpri Tarf Sandas,Haveli', 'Sangavi Tarf Sandas,Haveli', 'Jambhali,Haveli', 'Ashtapur,Haveli',
+            'Bhagatwadi,Haveli', 'Gaud Dara,Haveli', 'Wade Bolhai,Haveli', 'Shindwane,Haveli',
+            'Kalyan,Haveli', 'Ghera Sinhgad,Haveli', 'Kudaje,Haveli', 'Donaje,Haveli', 'Wanjalewadi,Haveli',
+            'Burkegaon,Haveli', 'Nhavi Sandas,Haveli', 'Shindewadi,Haveli', 'Gawadewadi,Haveli',
+            'Murkutenagar,Haveli', 'Khamgaon Tek,Haveli', 'Ramoshiwadi,Haveli', 'Mokarwadi,Haveli',
+            'Khadewadi,Haveli', 'Bahuli,Haveli', 'Tanaji Nagar,Haveli', 'Sonapur,Haveli', 'Vardare,Haveli',
+            'Sambharewadi,Haveli', 'Khamgaon Mawal,Haveli', 'Mogarwadi,Haveli', 'Mordarwadi,Haveli',
+            'Avasare,Haveli', 'Rahatvade,Haveli', 'Hingangaon,Haveli', 'Shiraswadi,Haveli', 'Katavi,Mawal',
+            'Kale,Mawal', 'Prabhachiwadi,Mawal', 'Yelse,Mawal', 'Ardav (Adavi),Mawal', 'Kadadhe,Mawal',
+            'Nane,Mawal', 'Tung,Mawal', 'Tikona,Mawal', 'Chavsar,Mawal', 'Boravli,Mawal', 'Inglun,Mawal',
+            'Khand,Mawal', 'Kolechafesar,Mawal', 'Kusur,Mawal', 'Morave,Mawal', 'Pimpriwadi,Mawal',
+            'Shivali,Mawal', 'Thoran,Mawal', 'Ukasan,Mawal', 'Vadeshwar,Mawal', 'Kusgaon P.m.,Mawal',
+            'Takave Bk.,Mawal', 'Shevati,Mawal', 'Pansoli,Mawal', 'Atvan,Mawal', 'Malegao Bk.,Mawal',
+            'Apati,Mawal', 'Bhajgaon,Mawal', 'Bhoyre,Mawal', 'Divad,Mawal', 'Govitri,Mawal', 'Jovan,Mawal',
+            'Kondiwade,Mawal', 'Pachane,Mawal', 'Pale,Mawal', 'Udhewadi,Mawal', 'Vadavali,Mawal',
+            'Pangloli,Mawal', 'Karandoli,Mawal', 'Dhaiwali,Mawal', 'Shilatane,Mawal', 'Takave Kh.,Mawal',
+            'Rajpuri,Mawal', 'Kurvande,Mawal', 'Lonawale,Mawal', 'Malavandi Thule,Mawal', 'Ambegaon,Mawal',
+            'Kunewadi,Mawal', 'Dahuli,Mawal', 'Mangarul,Mawal', 'Somwadi,Mawal', 'Kondivade N.m,Mawal',
+            'Dudhivare,Mawal', 'Vagheshwar,Mawal', 'Shilimb,Mawal', 'Sawale,Mawal', 'Pusane,Mawal',
+            'Malegao Kh,Mawal', 'Ajivali,Mawal', 'Valakh,Mawal', 'Sawantwadi,Mawal', 'Malewadi,Mawal',
+            'Mahagaon,Mawal', 'Lohagad,Mawal', 'Kambare N.m.,Mawal', 'Dhalewadi,Mawal', 'Budhavadi,Mawal',
+            'Gevhandhe,Mawal', 'Nagatali,Mawal', 'Rakaswadi,Mawal', 'Kusavali,Mawal', 'Wahangao,Mawal',
+            'Kiwale,Mawal', 'Shirdhe,Mawal', 'Jamboli,Mawal', 'Nandgaon,Mawal', 'Shindgaon,Mawal',
+            'Kambare Andar,Mawal', 'Kashal,Mawal', 'Khandashi,Mawal', 'Nesave,Mawal', 'Valavanti,Mawal',
+            'Dhangavhan,Mawal', 'Ovale,Mawal', 'Yelghol,Mawal', 'Velholi,Mawal', 'Karanjgaon,Mawal',
+            'Sangise,Mawal', 'Pale Nane Mawal,Mawal', 'Mormarwadi,Mawal', 'Mau,Mawal', 'Kacharewadi,Mawal',
+            'Vaund,Mawal', 'Brahmanwadi,Mawal', 'Done,Mawal', 'Kothurne,Mawal', 'Shire,Mawal',
+            'Belaj,Mawal', 'Jeware,Mawal', 'Vehergaon,Mawal', 'Budhle N.M.,Mawal', 'Vadivale,Mawal',
+            'Adhale bk,Mawal', 'Adhale kh.,Mawal', 'Shivane,Mawal', 'Phalne,Mawal', 'Ghonshet,Mawal',
+            'Sai,Mawal', 'Bhadawali,Mawal', 'Majgaon,Mawal', 'Pimpal Khunte,Mawal', 'Malawali P.m.,Mawal',
+            'Bedse,Mawal', 'Thugaon,Mawal', 'Varu,Mawal', 'Phagane,Mawal', 'Kadav,Mawal',
+            'Gevhande Khadak,Mawal', 'Keware,Mawal', 'Thakursai,Mawal', 'Brahmanoli,Mawal', 'Muthe,Mulshi',
+            'Padalgharwadi,Mulshi', 'Mugaon,Mulshi', 'Valane,Mulshi', 'Ugavali,Mulshi', 'Jawal,Mulshi',
+            'Ghutake,Mulshi', 'Ekole,Mulshi', 'Tailbaila,Mulshi', 'Bhambarde,Mulshi', 'Botarwadi,Mulshi',
+            'Chandivali,Mulshi', 'Andgaon,Mulshi', 'Dhamanohol,Mulshi', 'Koloshi,Mulshi', 'Sakhari,Mulshi',
+            'Kharavade,Mulshi', 'Pimploli,Mulshi', 'Masgaon,Mulshi', 'Wadavali,Mulshi', 'Admal,Mulshi',
+            'Bhembhatmal,Mulshi', 'Palase,Mulshi', 'Patharshet,Mulshi', 'Saiv Kh,Mulshi', 'Bhode,Mulshi',
+            'Mulshi Kh,Mulshi', 'Tata Talav,Mulshi', 'Karmoli,Mulshi', 'Shedani,Mulshi', 'Kolwan,Mulshi',
+            'Sathesai,Mulshi', 'Mugavde,Mulshi', 'Katavadi,Mulshi', 'Davje,Mulshi', 'Malegaon,Mulshi',
+            'Wanjale,Mulshi', 'Watunde,Mulshi', 'Vede,Mulshi', 'Mandede,Mulshi', 'Jatede,Mulshi',
+            'Kashing,Mulshi', 'Amaralewadi,Mulshi', 'Barape_Bk,Mulshi', 'Bhalgudi,Mulshi', 'Saltar,Mulshi',
+            'Shirvali,Mulshi', 'Nive,Mulshi', 'Andhale,Mulshi', 'Ambarwet,Mulshi', 'Vandre,Mulshi',
+            'Vadgaon,Mulshi', 'Pimpri,Mulshi', 'Rihe,Mulshi', 'Katarkhadak,Mulshi', 'Nandgaon,Mulshi',
+            'Padalghar,Mulshi', 'Mose Kh.,Mulshi', 'Dhadavali,Mulshi', 'Gadhale,Mulshi', 'Chinchwad,Mulshi',
+            'Kule,Mulshi', 'Hulavalewadi,Mulshi', 'Tamhini Bk,Mulshi', 'Warak,Mulshi', 'Vegre,Mulshi',
+            'Kolavade,Mulshi', 'Kondhur,Mulshi', 'Pethshahapur,Mulshi', 'Devghar,Mulshi', 'Ambavane,Mulshi',
+            'Kolavali,Mulshi', 'Pomgaon,Mulshi', 'Male,Mulshi', 'Kumbheri,Mulshi', 'Jamgaon,Mulshi',
+            'Share,Mulshi', 'Disali,Mulshi', 'Shileshwar,Mulshi', 'Bhadas Bk.,Mulshi', 'Gavadewadi,Mulshi',
+            'Dongrgaon,Mulshi', 'Hotale,Mulshi', 'Nanegaon,Mulshi', 'Asade,Mulshi', 'Chikhali Bk.,Mulshi',
+            'Belwade,Mulshi', 'Tav,Mulshi', 'Chale,Mulshi', 'Darawali (Dakhli),Mulshi', 'Morewadi,Mulshi',
+            'Bharekarwadi,Mulshi', 'Kasarsai,Mulshi', 'Visakhar,Mulshi', 'Walen,Mulshi', 'Hadasi,Mulshi',
+            'Kalamshet,Mulshi', 'Vitthalwadi,Mulshi', 'Andeshe,Mulshi', 'Khubawali,Mulshi',
+            'Temghar,Mulshi', 'Lavarde,Mulshi', 'Khechre,Mulshi', 'Marnewadi,Mulshi', 'Bhuini,Mulshi',
+            'Savargaon,Mulshi', 'Akole,Mulshi', 'Kondhavale,Mulshi', 'Paud,Mulshi', 'Dakhane,Mulshi',
+            'Sambhave,Mulshi', 'Khamboli,Mulshi', 'Kemasewadi,Mulshi', 'Adgaon,Mulshi',
+            'Chikhalgaon,Mulshi', 'Ravade,Mulshi', 'Nandivali,Mulshi', 'Dasave,Mulshi', 'Bhambavade,Bhor',
+            'Bhongavli,Bhor', 'Dhangavadi,Bhor', 'Gunand,Bhor', 'Kenjal,Bhor', 'Khadki,Bhor', 'Kikavi,Bhor',
+            'Morwadi,Bhor', 'Nhavi,Bhor', 'Nidhan,Bhor', 'Nigade,Bhor', 'Pande,Bhor', 'Panjalwadi,Bhor',
+            'Rajapur,Bhor', 'Sangavi Kh,Bhor', 'Sarole,Bhor', 'Savardare,Bhor', 'Taprewadi,Bhor',
+            'Umbare,Bhor', 'Vathar Kh,Bhor', 'Wagajwadi,Bhor', 'Degaon,Bhor', 'Didghar,Bhor',
+            'Jambhali,Bhor', 'Kambare,Bhor', 'Kanjale,Bhor', 'Karandi,Bhor', 'Ketkavane,Bhor', 'Khopi,Bhor',
+            'Kolavadi,Bhor', 'Kurungvadi,Bhor', 'Kusgaon,Bhor', 'Malegaon,Bhor', 'Parvadi,Bhor',
+            'Ranje,Bhor', 'Salavade,Bhor', 'Sangavi Bk,Bhor', 'Sonavadi,Bhor', 'Virwadi,Bhor',
+            'Tamhanwadi,Daund', 'Sahajpurwadi,Daund', 'Nandur,Daund', 'Dalimb,Daund', 'Takali,Daund',
+            'Vadgaon Bande,Daund', 'Koregaon Bhiwar,Daund', 'Telewadi,Daund', 'Panwali,Daund',
+            'Pilanwadi,Daund', 'Mirwadi,Daund', 'Dahitane,Daund', 'Devkarwadi,Daund', 'Boribhadak,Daund',
+            'Boriaindi,Daund', 'Boratewadi,Daund', 'Bharatgaon,Daund', 'Jawajebuwachiwadi,Daund',
+            'Kamatwadi,Daund', 'Kasurdi,Daund', 'Bhandgaon,Daund', 'Patethan,Daund', 'Tambewadi,Daund',
+            'Ladkatwadi,Daund', 'Khutbav,Daund', 'Pimpalgaon,Daund', 'Delvadi (Ekeriwadi),Daund',
+            'Undawadi,Daund', 'Nathachiwadi,Daund', 'Valki,Daund', 'Rahu,Daund', 'Khamgaon,Daund',
+            'Nangaon,Daund', 'Amoni Mal,Daund', 'Ganesh Road,Daund', 'Varwand,Daund', 'Khopodi,Daund',
+            'Handalwadi,Daund', 'Wakhari,Daund', 'Dapodi,Daund', 'Pargaon,Daund', 'Deshmukh Mala,Daund',
+            'Nimbalkar Wasti,Daund', 'Galandwadi,Daund', 'Kodit Kh.,Purandar', 'Pur,Purandar',
+            'Pokhar,Purandar', 'Warwadi,Purandar', 'Kumbhoshi,Purandar', 'Somurdi,Purandar',
+            'Gherapurandhar,Purandar', 'Supe  Kh.,Purandar', 'Misalwadi,Purandar', 'Thapewadi,Purandar',
+            'Bhivari,Purandar', 'Bhivadi,Purandar', 'Bahirwadi,Purandar', 'Bhopgaon,Purandar',
+            'Patharwadi,Purandar', 'Pimpale,Purandar', 'Panvadi,Purandar', 'Hivare,Purandar',
+            'Kodit Budruk,Purandar', 'Askarwadi,Purandar', 'Chambali,Purandar', 'Borhalewadi,Purandar',
+            'Garade,Purandar', 'Ambawane,Velhe', 'Chinchale Bk,Velhe', 'Karajwane,Velhe', 'Adavali,Velhe',
+            'Askawadi,Velhe', 'Ketkavane,Velhe', 'Kolwadi,Velhe', 'Lasirgaon,Velhe', 'Margasani,Velhe',
+            'Khambawadi,Velhe', 'Mangdari,Velhe', 'Mangaon,Velhe', 'Pole,Velhe', 'Kasedi,Velhe',
+            'Chikhali Kh,Velhe', 'Bhalvadi,Velhe', 'Thangaon,Velhe', 'Shirkoli,Velhe', 'Ghodshet,Velhe',
+            'Ambed,Velhe', 'Khamgaon,Velhe', 'Vinzar,Velhe', 'Wangani,Velhe', 'Varasgaon,Velhe',
+            'Ambegaon Kh,Velhe', 'Gholapghar,Velhe', 'Kambegi,Velhe', 'Ranjane,Velhe', 'Dapode,Velhe',
+            'Chinchale Kh,Velhe', 'Kuran Bk,Velhe', 'Vadghar,Velhe', 'Givashi,Velhe', 'Koshimghar,Velhe',
+            'Mose Bk,Velhe', 'Saiv Bk.,Velhe', 'Ranavdi,Velhe', 'Boravale,Velhe', 'Nigade Bk.,Velhe',
+            'Panshet,Velhe', 'Kondgaon,Velhe', 'Malavli,Velhe', 'Kathawadi,Velhe', 'Rule,Velhe',
+            'Kuran Kh,Velhe', 'Dhindli,Velhe', 'Ambegaon Bk,Velhe', 'Osade,Velhe', 'Nigade Mose,Velhe',
+            'Kandave,Velhe', 'Wanjalwadi,Velhe', 'Kurvathi,Velhe', 'Pimpale Jagtap,Shirur',
+            'Wajewadi,Shirur', 'Kasari,Shirur', 'Jategaon Kh.,Shirur', 'Takali Bhima,Shirur',
+            'Kondhapuri,Shirur', 'Khairewadi,Shirur', 'Rautwadi,Shirur', 'Karandi,Shirur', 'Amdabad,Shirur',
+            'Jategaon Bk.,Shirur', 'Kendur,Shirur', 'Shastabad,Shirur', 'Khandale,Shirur',
+            'Sone Sangavi,Shirur', 'Hivare,Shirur', 'Burunjwadi,Shirur', 'Darekarwadi,Shirur',
+            'Vitthalwadi,Shirur', 'Dingrajwadi,Shirur', 'Malthan,Shirur', 'Waghale,Shirur', 'Varude,Shirur',
+            'Shivtakrar Mahalungi,Shirur', 'Shingadwadi,Shirur', 'Ranjangaon Sandas,Shirur',
+            'Rakshewadi,Shirur', 'Pimpale Dumal,Shirur', 'Pimpari Dumala,Shirur', 'Nimgaon Bhogi,Shirur',
+            'Mukhai,Shirur', 'Motewadi,Shirur', 'Midgulwadi,Shirur', 'Lakhewadi,Shirur',
+            'Karanjawane,Shirur', 'Golegaon,Shirur', 'Dhanore,Shirur', 'Dhamari,Shirur', 'Dahiwadi,Shirur',
+            'Chincholi,Shirur', 'Bhambarde,Shirur', 'Arangaon,Shirur', 'Ambale,Shirur',
+            'Ganegaon Burunjwadi,Shirur', 'Kanhur mesai,Shirur', 'Pabal,Shirur', 'Andhalgaon,Shirur',
+            'Nimone,Shirur', 'Nhavara,Shirur', 'Kohakdewadi,Shirur', 'Uralgaon,Shirur',
+            'Alegaon Paga,Shirur', 'Nagargaon,Shirur', 'Babhulsar Kh.,Shirur', 'Chavhanwadi,Shirur',
+            'Parodi,Shirur', 'Nimgaon Mhalungi,Shirur', 'Karade,Shirur', 'Nighoje,Khed', 'Moi,Khed',
+            'Khalumbre,Khed', 'Mahalunge,Khed', 'Kanhewadi Tarf Chakan,Khed', 'Sangurdi,Khed',
+            'Shinde,Khed', 'Wasuli,Khed', 'Yevalewadi,Khed', 'Sawardari,Khed', 'Kuruli,Khed',
+            'Medankarwadi,Khed', 'Nanekarwadi,Khed', 'Sudumbare,Mawal', 'Chimbali,Khed', 'Indori,Mawal',
+            'Biradwadi,Khed', 'Bhamboli,Khed', 'Ambethan,Khed', 'Kharabwadi,Khed', 'Warale,Khed',
+            'Kadachiwadi,Khed', 'Sudhavadi,Mawal', 'Jambavade,Mawal', 'Bhare,Mulshi', 'Kasar Amboli,Mulshi',
+            'Mukhaiwadi,Mulshi', 'Uravade,Mulshi', 'Bhukum,Mulshi', 'Nande,Mulshi', 'Sus,Mulshi',
+            'Bavadhan Bk,Mulshi', 'Vadki,Haveli', 'Ghotavde,Mulshi', 'Talegaon Dabhade (R),Mawal',
+            'Urse,Mawal', 'Parandwadi,Mawal', 'Bhilarewadi,Haveli', 'Jambhulwadi,Haveli', 'Kolavadi,Haveli',
+            'Sasewadi,Bhor', 'Shindewadi,Bhor', 'Lavale,Mulshi', 'Man,Mulshi', 'Sanas Nagar,Haveli',
+            'Nandoshi,Haveli', 'Pirangut,Mulshi', 'Vadgaon Shinde,Haveli', 'Loni-Kalbhor,Haveli',
+            'Dive,Purandar', 'Ambegaon,Mulshi', 'Pawarwadi,Purandar', 'Kalewadi,Purandar',
+            'Sonori,Purandar', 'Bhugaon,Mulshi', 'Manjari Kh.,Haveli', 'Manjari Bk,Haveli',
+            'Kolavdi,Haveli', 'Shevalwadi,Haveli', 'Kadamvak Wasti,Haveli', 'Holkarwadi,Haveli',
+            'Autad Handewadi,Haveli', 'Vadachiwadi,Haveli', 'Pisoli,Haveli', 'Bebad Ohol,Mawal',
+            'Dhamne,Mawal', 'Godumbare,Mawal', 'Shirgaon,Mawal', 'Gahunje,Mawal', 'Salumbe,Mawal',
+            'Sangavade,Mawal', 'Jambe,Mulshi', 'Nere,Mulshi', 'Dattawadi,Mulshi', 'Hinjavadi,Mulshi',
+            'Marunji,Mulshi', 'Mahalunge,Mulshi', 'Materewadi,Mulshi', 'Bhoirwadi,Mulshi',
+            'Bhegdewadi,Mulshi', 'Chande,Mulshi', 'Mulkhed,Mulshi', 'Godambewadi,Mulshi',
+            'Bhowarapur,Haveli', 'Uruli Kanchan,Haveli', 'Peth,Haveli', 'Koregaon Mul,Haveli',
+            'Prayagdham,Haveli', 'Sortapwadi,Haveli', 'Kunjirwadi,Haveli', 'Theur,Haveli', 'Naygaon,Haveli',
+            'Mangewadi,Haveli', 'Nimbalkarwadi,Haveli', 'Kirkitwadi,Haveli', 'Khadakwasale,Haveli',
+            'Nanded ,Haveli', 'Kopare,Haveli', 'Kondhave Dhavade,Haveli', 'Mendhewadi,Mawal',
+            'Varale,Mawal', 'Malawadi,Mawal', 'Ambi,Mawal', 'Brahman Wadi,Mawal', 'Sate,Mawal',
+            'Mohitewadi,Mawal', 'Chikhalse,Mawal', 'Ahirvade,Mawal', 'Kusgaon Kh.,Mawal',
+            'Khadkale (CT),Mawal', 'Kamshet,Mawal', 'Paravadi,Mawal', 'Sadavli,Mawal', 'Ozarde,Mawal',
+            'Baur,Mawal', 'Brahmanwadi,Mawal', 'Karunj,Mawal', 'Adhe Kh.,Mawal', 'Somatane,Mawal',
+            'Jadhavwadi,Mawal', 'Akurdi,Mawal', 'Nanoli Tarf Chakan,Mawal', 'Sangavi,Mawal',
+            'Umbare Navalakh,Mawal', 'Badhalawadi,Mawal', 'Naygaon,Mawal', 'Nanoli N.m.,Mawal',
+            'Jambhul,Mawal', 'Kanhe,Mawal', 'Ambale,Mawal', 'Nigade,Mawal', 'Kalhat,Mawal',
+            'Pawalewadi,Mawal', 'Boraj,Mawal', 'Patan,Mawal', 'Kusgaon Bk. (CT),Mawal', 'Devale,Mawal',
+            'Aundhe kh.,Mawal', 'Dongargaon,Mawal', 'Aundholi,Mawal', 'Varsoli,Mawal', 'Karla,Mawal',
+            'Waksai,Mawal', 'Devghar,Mawal', 'Sadapur,Mawal', 'Kune N.m.,Mawal', 'Bhaje,Mawal',
+            'Malvali,Mawal', 'Mudhavare,Mawal', 'Taje,Mawal', 'Pathargaon,Mawal', 'Pimploli,Mawal',
+            'Santosh Nagar ,Khed', 'Rakshewadi,Khed', 'Waki Kh,Khed', 'Holewadi,Khed', 'Chandoli,Khed',
+            'Varachi Bhamburwadi,Khed', 'Sandbhorwadi,Khed', 'Pacharnewadi,Khed', 'Dhorewadi,Khed',
+            'Vadgaon Tarf Khed,Khed', 'Shiroli,Khed', 'Satkarsthal,Khed', 'Koregaon Bhima _CT,Shirur',
+            'Sanaswadi ,Shirur', 'Shikrapur,Shirur', 'Talegaon Dhamdhere,Shirur', 'Apti,Shirur',
+            'Vadu Bk.,Shirur', 'Shirur_Annapur_Saradwadi_Tardobachiwadi_Kardilwad,Shirur',
+            'Dhok Sangavi,Shirur', 'Karegaon,Shirur', 'Ranjangaon Ganpati,Shirur', 'Vanpuri,Purandar',
+            'Udachiwadi,Purandar', 'Singapur,Purandar', 'Zendewadi,Purandar', 'Jadhavwadi,Purandar',
+            'Kumbharvalan,Purandar', 'Ambodi,Purandar', 'Gurholi,Purandar', 'Bhose,Khed', 'Alandi,Khed',
+            'Dhanore,Khed', 'Rase,Khed', 'Solu,Khed', 'Pimpalgaon Tarf Chakan,Khed', 'Tulapur,Haveli',
+            'Nirgudi,Haveli', 'Markal,Khed', 'Charholi Kh.,Khed', 'Kelgaon,Khed', 'Shivapur,Haveli',
+            'Khed Shivapur,Haveli', 'Ramnagar,Haveli', 'Kasurdi,Bhor', 'Shivare,Bhor', 'Velu,Bhor',
+            'Hrishchandri,Bhor', 'Kapurhol,Bhor', 'Divale,Bhor', 'Kamthadi,Bhor', 'Kelavade,Bhor',
+            'Nasrapur,Bhor', 'Naygaon,Bhor', 'Varve Bk.,Bhor', 'Varve Kh.,Bhor', 'Ketkawale,Purandar',
+            'Chivewadi,Purandar', 'Devadi,Purandar', 'Awhalwadi,Haveli', 'Loni-kand,Haveli',
+            'Kesnand,Haveli', 'Taleranwadi,Haveli', 'Bhavadi,Haveli', 'Perane,Haveli', 'Phulgaon,Haveli',
+            'Wadhu Kh,Haveli', 'Wagholi,Haveli', 'Dhumalicha Mala,Daund', 'Kedgaon,Daund',
+            'Kedgaon Station,Daund', 'Dhaygudewadi,Daund', 'Boripardhi,Daund', 'Yawat Station,Daund',
+            'Yawat,Daund', 'Chandkhed,Mawal', 'Darumbare,Mawal', 'Vadgaon,Mawal', 'Golegaon,Khed',
+            'Narhe,Haveli'
+        ];
         $(".search").autocomplete({
-            source: function(request, response) {
-                const marathiText = /^[\u0900-\u097F\s]*$/;
-                var array = [request.term];
-
-                if (marathiText.test(array[0])) {
-                    $.ajax({
-                        url: 'searche.php',
-                        method: 'POST',
-                        data: { search2: array[0] },
-                        success: function(data) {              
-                            var autocompleteData = data.map(function(item) {
-                                return {
-                                    label: item.ownername + ', ' + item.villagename + ', ' + item.talukaname + ', ' + item.gutnumber,
-                                    value: item.ownername + ',' + item.villagename + ',' + item.talukaname + ',' + item.gutnumber.split('/')[0]
-                                };
-                            });
-                            // console.log(autocompleteData,"autocompleteData")
-                            response(autocompleteData);
-                        },
-                        error: function(error) {
-                            console.error('AJAX request failed:', error);
-                        }
-                    });
-                } else {
-                    var filteredData = availableTags.filter(function (item){
-                                return item.toLowerCase().includes(array[0].toLowerCase());
-                            })
-                            response(filteredData);
-                    // Handle non-Marathi text
-                }
-            }
+            source: availableTags
         });
     });
-
-
-    });
-
-    
-                        
-                    
-
     </script>
 
 
@@ -481,19 +428,6 @@ $(document).ready(function() {
                     </p>
 
                 </li>
-
-                <li>
-                    <!-- <div class=""> -->
-                        <a class="fs-6 px-3" style="color:#dddddd;" href="index.php"> <i class="fa-solid fa-house"></i>   Dashboard</a>
-                    <!-- </div> -->
-                </li>
-
-                <li>
-                    <!-- <div class=""> -->
-                        <a class="fs-6 px-3" style="color:#dddddd;" href="tabledemo.php"><i class="fas fa-chart-line"></i>   Statistics </a>
-                    <!-- </div> -->
-                </li>
-                <hr>
                 <li>
                     <!-- *************************prompt ************** -->
 
@@ -657,6 +591,19 @@ $(document).ready(function() {
 
     
 
+    // var wms_layer13 = L.tileLayer.wms(
+    //     "https://portal.tcplgeo.com/geoservers/DP/wms", {
+    //         layers: "DP:layout",
+    //         format: "image/png",
+    //         transparent: true,
+    //         tiled: true,
+    //         version: "1.1.0",
+    //         attribution: "layout",
+    //         opacity: 1,
+
+    //     }
+    // );
+
 
     var userRole = "<?php echo $user['role']; ?>";
     // var userRole = "lohar";
@@ -718,6 +665,13 @@ $(document).ready(function() {
 
 
 
+
+
+
+
+
+
+
     map.on("contextmenu", (e) => {
         let size = map.getSize();
         let bbox = map.getBounds().toBBoxString();
@@ -726,197 +680,54 @@ $(document).ready(function() {
         let urrr =
             `https://portal.geopulsea.com/geoserver/zone/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image%2Fpng&TRANSPARENT=true&QUERY_LAYERS=${layer}&STYLES&LAYERS=${layer}&exceptions=application%2Fvnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=${Math.round(e.containerPoint.x)}&Y=${Math.round(e.containerPoint.y)}&SRS=EPSG%3A4326&WIDTH=${size.x}&HEIGHT=${size.y}&BBOX=${bbox}`
 
+        // you can use this url for further processing such as fetching data from server or showing it on the map
+
         if (urrr) {
-        fetch(urrr)
-            .then((response) => response.json())
-            .then((html) => {
-                var htmldata = html.features[0].properties;
-                let keys = Object.keys(htmldata);
-                let values = Object.values(htmldata);
-                var gutNumber = values[1];
-                var villageName = values[3];
-                var talukaName = values[2];
-                $.ajax({
-                    url: 'tr.php', // Replace with the actual path to your PHP script
-                    method: 'POST',
-                    data: {
-                        gutNumber: gutNumber.split('/')[0],
-                        villageName: villageName,
-                        talukaName: talukaName
-                    },
-                    success: function (data) {
-                        var ownersData = data; 
-                        let finalOwnerNames = ownersData.map(owner => owner.ownername).join('<br>');
-                        
-                        let ownerAreas = Array.from(new Set(ownersData.map(owner => owner.area))).join('<br>');
+            fetch(urrr)
 
-                        let txtk1 = "";
-                        var xx = 0;
-                        for (let gb in keys) {
-                            txtk1 += "<tr><td>" + keys[xx] + "</td><td>" + values[xx] + "</td></tr>";
-                            xx += 1;
-                        }
+                .then((response) => response.json())
+                .then((html) => {
 
-                        let detaildata1 =
-                            "<div style='max-height: 350px;  overflow-y: scroll;'><table  style='width:70%;' class='popup-table' >" +
-                            txtk1 + "<tr><td>OwnerName</td><td>" + finalOwnerNames +
-                            "</td></tr><tr><td>7/12 Area </td><td>" + ownerAreas +
-                            "</td></tr><tr><td>Co-Ordinates</td><td>" + e.latlng +
-                            "</td></tr></table></div>";
+                    var htmldata = html.features[0].properties
+                    let keys = Object.keys(htmldata);
+                    let values = Object.values(htmldata);
+                    let txtk1 = "";
+                    var xx = 0
+                    for (let gb in keys) {
+                        txtk1 += "<tr><td>" + keys[xx] + "</td><td>" + values[xx] + "</td></tr>";
+                        xx += 1
+                    };
+                    let detaildata1 =
+                        "<div style='max-height: 350px;  overflow-y: scroll;'><table  style='width:70%;' class='popup-table' >" +
+                        txtk1 + "<tr><td>Co-Ordinates</td><td>" + e.latlng +
+                        "</td></tr></table></div>"
 
-                        L.popup()
-                            .setLatLng(e.latlng)
-                            .setContent(detaildata1)
-                            .openOn(map);
-                    },
-                    error: function (error) {
-                        console.error('AJAX request failed:', error);
-                    }
-                });
-            });
-}
+                    L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(detaildata1)
+                        .openOn(map);
+                })
+        }
     });
+
 
 
     map.on('dblclick', function(e) {
- 
-        let size = map.getSize();
-        let bbox = map.getBounds().toBBoxString();
-        let layer = 'zone:Revenue';
-        let style = 'zone:Revenue';
-        let urrr =
-            `https://portal.geopulsea.com/geoserver/zone/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image%2Fpng&TRANSPARENT=true&QUERY_LAYERS=${layer}&STYLES&LAYERS=${layer}&exceptions=application%2Fvnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=${Math.round(e.containerPoint.x)}&Y=${Math.round(e.containerPoint.y)}&SRS=EPSG%3A4326&WIDTH=${size.x}&HEIGHT=${size.y}&BBOX=${bbox}`
- 
-        // you can use this url for further processing such as fetching data from server or showing it on the map
- 
-        if (urrr) {
-            fetch(urrr)
- 
-                .then((response) => response.json())
-                .then((html) => {
-              
-                    var htmldata = html.features[0].properties
-                    // console.log(htmldata,"_____________________")
-                    var coordinatesArray =  html.features[0].geometry.coordinates[0][0]
-                    var coordinatesList = coordinatesArray.join(', ');
-                    // console.log(coordinatesList,"******************************", coordinatesArray)
-                    var  geometryType = html.features[0].geometry.type
- 
- 
-                    var coordinatesWithAltitude = coordinatesArray.map(function(coord) {
-                        return [coord[0].toFixed(15), coord[1].toFixed(15)  , 0];
-                                });
- 
-                        // console.log(coordinatesWithAltitude);
- 
- 
- 
-                    function generateKML(geometryType, coordinatesArray) {
- 
-                        var kml =`<?xml version="1.0" encoding="UTF-8"?>
-                                    <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
-                                    <Document>
-                                        <name>UPolygon.kml</name>
-                                        <StyleMap id="m_ylw-pushpin">
-                                            <Pair>
-                                                <key>normal</key>
-                                                <styleUrl>#s_ylw-pushpin</styleUrl>
-                                            </Pair>
-                                            <Pair>
-                                                <key>highlight</key>
-                                                <styleUrl>#s_ylw-pushpin_hl</styleUrl>
-                                            </Pair>
-                                        </StyleMap>
-                                        <Style id="s_ylw-pushpin">
-                                            <IconStyle>
-                                                <scale>1.1</scale>
-                                                <Icon>
-                                                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-                                                </Icon>
-                                                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-                                            </IconStyle>
-                                            <LineStyle>
-                                                <color>ff00ff00</color>
-                                                <width>5</width>
-                                            </LineStyle>
-                                            <PolyStyle>
-                                                <color>80ffffff</color>
-                                            </PolyStyle>
-                                        </Style>
-                                        <Style id="s_ylw-pushpin_hl">
-                                            <IconStyle>
-                                                <scale>1.3</scale>
-                                                <Icon>
-                                                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-                                                </Icon>
-                                                <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-                                            </IconStyle>
-                                            <LineStyle>
-                                                <color>ff00ff00</color>
-                                                <width>5</width>
-                                            </LineStyle>
-                                            <PolyStyle>
-                                                <color>80ffffff</color>
-                                            </PolyStyle>
-                                        </Style>
-                                        <Placemark>
-                                            <name>Untitled Polygon</name>
-                                            <styleUrl>#m_ylw-pushpin</styleUrl>
-                                            <Polygon>
-                                                <tessellate>1</tessellate>
-                                                <outerBoundaryIs>
-                                                    <LinearRing>
-                                                        <coordinates>
-                                                        ${coordinatesArray.join(' ')}
-                                                        </coordinates>
-                                                        </LinearRing>
-                                                    </outerBoundaryIs>
-                                                </Polygon>
-                                            </Placemark>
-                                        </Document>
-                                        </kml>`;
-                        return kml;
-                    }
-                    var kmlContent = generateKML(geometryType, coordinatesWithAltitude);
- 
-                    // console.log(kmlContent);
- 
-                  
-            var ssDownload = document.createElement('a');
-            ssDownload.href = 'data:application/vnd.google-earth.kml+xml;charset=utf-8,' + encodeURIComponent(kmlContent);
-            ssDownload.download = 'polygon.kml';
-            ssDownload.textContent = 'Download KML';
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-            var ssOpenInGoogleEarth = document.createElement('a');
-            ssOpenInGoogleEarth.href = 'https://earth.google.com/web/search/' + lat + "," + lng ;
-            ssOpenInGoogleEarth.target = '_blank';
-            ssOpenInGoogleEarth.textContent = 'Open in Google Earth';
-            var ssOpenInGoogleMap = document.createElement('a');
-            ssOpenInGoogleMap.href = "https://www.google.com/maps?q=" +  lat + "," + lng;
-            ssOpenInGoogleMap.target = '_blank';
-            ssOpenInGoogleMap.textContent = 'Open in Google Map';
-
-            // Create a div element to hold the links
-            var container = L.DomUtil.create('div');
-            container.appendChild(ssDownload);
-            container.appendChild(document.createElement('br')); // Add a line break between the links
-            container.appendChild(ssOpenInGoogleEarth);
-            container.appendChild(document.createElement('br')); // Add a line break between the links
-            container.appendChild(ssOpenInGoogleMap);
-
-            // Create a Leaflet popup and set its content to the container
-            var popup = L.popup()
+        var lat = e.latlng.lat.toFixed(15);
+        var lng = e.latlng.lng.toFixed(15);
+        // console.log(lat, lng)
+        var popupContent = '<a href="https://earth.google.com/web/search/' + lat + "," + lng +
+            '" target="_blank">Open in Google Earth</a><br>' +
+    'Latitude: ' + lat + ' <br> ' +
+    'Longitude: ' + lng + '<hr>' +
+     + lat + ' , ' 
+     + lng;
+        L.popup()
             .setLatLng(e.latlng)
-            .setContent(container)
+            .setContent(popupContent)
             .openOn(map);
-                });
-            }
-     
     });
- 
- 
-           
+
     // var control = new L.control.layers(baseLayers, WMSlayers).addTo(map);
 
 
@@ -1099,40 +910,16 @@ $(document).ready(function() {
 
     // *****************************************************************Search Button**********************************************************************
     function SearchMe() {
-    var array = $('.search').val().split(",");
+        var array = $('.search').val().split(",");
 
-    const marathiText = /^[\u0900-\u097F\s]*$/;
-
-  
-
-        if (marathiText.test(array[0])) {
-            // =============================added for name vise seaech ==========================
-            var guts = array.slice(3, array.length).join(",")
-            // console.log(guts,"guts",marathiText.test(array[0]))
-            var sql_filter1 = "Village_Name_Revenue Like '" + array[1] + "'" + "AND Gut_Number IN (" + guts + ")" +
-                "AND Taluka Like '" + array[2] + "'"
-
-                // console.log(sql_filter1,"guts")    
-            fitbou(sql_filter1)
-            wms_layer12.setParams({
-                cql_filter: sql_filter1,
-                styles: 'highlight',
-            });
-            wms_layer12.addTo(map).bringToFront();
-        
-                // console.log("The text is in Marathi.");
-                } 
-        else{
-            // console.log(array[0],"not matched")
-            // =============================added for name vise seaech ==========================
-     if (array.length == 1) {
+        if (array.length == 1) {
             var sql_filter1 = "Gut_Number Like '" + array[0] + "'"
             fitbou(sql_filter1)
             wms_layer12.setParams({
                 cql_filter: sql_filter1,
                 styles: 'highlight',
             });
-            wms_layer12.addTo(map).bringToFront();
+            wms_layer12.addTo(map);
         } else if (array.length == 2) {
             var sql_filter1 = "Village_Name_Revenue Like '" + array[0] + "'" + "AND Taluka Like '" + array[1] + "'"
             fitbou(sql_filter1)
@@ -1140,21 +927,19 @@ $(document).ready(function() {
                 cql_filter: sql_filter1,
                 styles: 'highlight',
             });
-            wms_layer12.addTo(map).bringToFront();
+            wms_layer12.addTo(map);
         } else if (array.length >= 3) {
             var guts = array.slice(2, array.length).join(", ")
             var sql_filter1 = "Village_Name_Revenue Like '" + array[0] + "'" + "AND Gut_Number IN (" + guts + ")" +
                 "AND Taluka Like '" + array[1] + "'"
-                // console.log(sql_filter1)
             fitbou(sql_filter1)
             wms_layer12.setParams({
                 cql_filter: sql_filter1,
                 styles: 'highlight',
             });
-            wms_layer12.addTo(map).bringToFront();
+            wms_layer12.addTo(map);
         }
-        };
-    
+
     }
     // ------------------------------------------save search history-------
     function sendData() {
@@ -1498,7 +1283,7 @@ $(document).ready(function() {
           loadLocationTable();
         },
         error: function(xhr, status, error) {
-        //   console.log(xhr.responseText);
+          console.log(xhr.responseText);
           Swal.fire({
             title: 'An error occurred while saving the location.',
             customClass: {
@@ -1537,7 +1322,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                // console.log(xhr.responseText);
+                console.log(xhr.responseText);
                 alert('An error occurred while retrieving locations.');
             }
         });
@@ -1581,7 +1366,7 @@ $(document).ready(function() {
           loadLocationTable();
         },
         error: function(xhr, status, error) {
-        //   console.log(xhr.responseText);
+          console.log(xhr.responseText);
           Swal.fire({
             title: 'An error occurred while deleting the location.',
             position: 'center',

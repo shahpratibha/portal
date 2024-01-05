@@ -1,8 +1,8 @@
 <?php
 // Connect to your database
 $servername = "localhost";
-$username = "phpmyadmin";
-$password = "Sagar@992101";
+$username = "root";
+$password = "";
 $dbname = "jfsa";
 
 

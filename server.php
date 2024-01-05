@@ -8,11 +8,10 @@ $email = "";
 $errors = array();
 
 // connect to the database
-$db = mysqli_connect('localhost', 'phpmyadmin', 'Sagar@992101', 'jfsa');
+$db = mysqli_connect('localhost', 'root', '', 'jfsa');
 if ($db->connect_error) {
     die('Database connection failed: ' . $db->connect_error);
 }
-
 
 
 // REGISTER USER
@@ -104,11 +103,11 @@ if (isset($_POST['login_user'])) {
             $query = "INSERT INTO user_login (user_id, login_time) VALUES ('$user_id', '$login_time')";
 
             // Execute the SQL statement
-            if (mysqli_query($db, $query)) {
-                echo "Location inserted successfully.";
-            } else {
-                echo "Error inserting location: " . mysqli_error($db);
-            }
+            // if (mysqli_query($db, $query)) {
+            //     echo "Location inserted successfully.";
+            // } else {
+            //     echo "Error inserting location: " . mysqli_error($db);
+            // }
 
             // Close the database connection
             mysqli_close($db);
